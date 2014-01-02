@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Article
  *
- * @ORM\Table()
+ * @ORM\Table(name="article")
  * @ORM\Entity(repositoryClass="Pentalog\BlogBundle\Entity\ArticleRepository")
  */
 class Article {
@@ -48,9 +48,18 @@ class Article {
      * @ORM\Column(name="content", type="text")
      */
     private $content;
+    
+    /**
+     *
+     * @var boolean
+     * 
+     * @ORM\Column(name="publication", type="boolean") 
+     */
+    private $publication;
 
     public function __construct() {
         $this->date = new \Datetime(); // Par défaut, la date de l'article est la date d'aujourd'hui
+        $this->publication = true;
     }
 
     /**
@@ -146,4 +155,27 @@ class Article {
         return $this->content;
     }
 
+
+    /**
+     * Set publication
+     *
+     * @param boolean $publication
+     * @return Article
+     */
+    public function setPublication($publication)
+    {
+        $this->publication = $publication;
+
+        return $this;
+    }
+
+    /**
+     * Get publication
+     *
+     * @return boolean 
+     */
+    public function getPublication()
+    {
+        return $this->publication;
+    }
 }
