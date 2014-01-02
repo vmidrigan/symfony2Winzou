@@ -1,0 +1,9 @@
+{# src/Pentalog/BlogBundle/Resources/views/Blog/menu.html.twig #}
+
+<h3>Les derniers articles</h3>
+
+<ul class="nav nav-pills nav-stacked">
+  {% for article in articles %}
+    <li><a href="{{ path('pentalog_blog_view', {'id': article.id}) }}">{{ article.title }}</a></li>
+  {% endfor %}
+</ul>

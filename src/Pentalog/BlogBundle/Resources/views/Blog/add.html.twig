@@ -1,0 +1,19 @@
+{# src/Pentalog/BlogBundle/Resources/views/Blog/add.html.twig #}
+
+{% extends "PentalogBlogBundle::layout.html.twig" %}
+
+{% block title %}
+  Ajouter un article - {{ parent() }}
+{% endblock %}
+
+{% block pentalogblog_body %}
+
+  <h2>Ajouter un article</h2>
+
+  {% include "PentalogBlogBundle:Blog:form.html.twig" %}
+
+  <p>
+    Vous etes en train d'ajouter un nouveau article
+  </p>
+
+{% endblock %}

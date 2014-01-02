@@ -1,0 +1,4 @@
+pentalog_blog:
+    resource: "@PentalogBlogBundle/Resources/config/routing.yml"
+    prefix:   /blog
+

@@ -1,0 +1,10 @@
+parameters:
+#    pentalog_blog.example.class: Pentalog\BlogBundle\Example
+
+services:
+#    pentalog_blog.example:
+#        class: %pentalog_blog.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
+    pentalog_blog.antispam:
+        class: Pentalog\BlogBundle\Antispam\PentalogAntispam
+        arguments: [@mailer, %locale%, 3]

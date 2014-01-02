@@ -1,0 +1,33 @@
+{# src/Pentalog/BlogBundle/Resources/view/Blog/view.html.twig #}
+
+{% extends "PentalogBlogBundle::layout.html.twig" %}
+
+{% block title %}
+  Lecture d'un article - {{ parent() }}
+{% endblock %}
+
+{% block pentalogblog_body %}
+
+  <h2>{{ article.title }}</h2>
+  <i>Par {{ article.author }}, le {{ article.date|date('d/m/Y') }}</i>
+
+  <div class="well">
+    {{ article.content }}
+  </div>
+
+  <p>
+    <a href="{{ path('pentalog_blog_homepage') }}" class="btn btn-default">
+      <i class="icon-chevron-left"></i>
+      Retour à la liste
+    </a>
+    <a href="{{ path('pentalog_blog_edit', {'id': article.id}) }}" class="btn btn-default">
+      <i class="icon-edit"></i>
+      Modifier l'article
+    </a>
+    <a href="{{ path('pentalog_blog_delete', {'id': article.id}) }}" class="btn btn-default">
+      <i class="icon-trash"></i>
+      Supprimer l'article
+    </a>
+  </p>
+
+{% endblock %}
