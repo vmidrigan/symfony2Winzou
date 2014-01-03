@@ -5,6 +5,7 @@ namespace Pentalog\BlogBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Pentalog\BlogBundle\Entity\Article;
+use Pentalog\BlogBundle\Entity\Image;
 
 class BlogController extends Controller {
 
@@ -15,40 +16,26 @@ class BlogController extends Controller {
             throw $this->createNotFoundException('Page inexistante (page = ' . $page . ')');
         }
 
-        $articles = array(
-            array(
-                'title' => 'Mon weekend a Phi Phi Island !',
-                'id' => 1,
-                'author' => 'winzou',
-                'content' => 'Ce weekend était trop bien. Blabla…',
-                'date' => new \Datetime()),
-            array(
-                'title' => 'Repetition du National Day de Singapour',
-                'id' => 2,
-                'author' => 'winzou',
-                'content' => 'Bientôt prêt pour le jour J. Blabla…',
-                'date' => new \Datetime()),
-            array(
-                'title' => 'Chiffre d\'affaire en hausse',
-                'id' => 3,
-                'author' => 'M@teo21',
-                'content' => '+500% sur 1 an, fabuleux. Blabla…',
-                'date' => new \Datetime())
-        );
+        $articles = $this->getDoctrine()->getManager()->getRepository('PentalogBlogBundle:Article')->getArticles(1, $page);
 
-        return $this->render('PentalogBlogBundle:Blog:index.html.twig', array('articles' => $articles));
+        return $this->render('PentalogBlogBundle:Blog:index.html.twig', array(
+            'articles' => $articles,
+            'page'       => $page,
+            'pageNumber' => ceil(count($articles)/1)
+            ));
     }
 
-    public function viewAction($id) {
-        $article = array(
-            'id' => 1,
-            'title' => 'Mon weekend a Phi Phi Island !',
-            'author' => 'winzou',
-            'content' => 'Ce weekend était trop bien. Blabla…',
-            'date' => new \Datetime()
-        );
+    public function viewAction(Article $article) {
+        $em = $this->getDoctrine()
+                ->getManager();
+
+        // On récupère les articleCompetence pour l'article $article
+        $compList = $em->getRepository('PentalogBlogBundle:ArticleCompetence')
+                ->findByArticle($article->getId());
+
         return $this->render('PentalogBlogBundle:Blog:view.html.twig', array(
                     'article' => $article,
+                    'competences' => $compList
         ));
     }
 
@@ -58,22 +45,7 @@ class BlogController extends Controller {
     }
 
     public function addAction() {
-        // Création de l'entité
-        $article = new Article();
-        $article->setTitle('Mon dernier weekend');
-        $article->setAuthor('Bibi');
-        $article->setContent("C'était vraiment super et on s'est bien amusé.");
-        // On peut ne pas définir ni la date ni la publication,
-        // car ces attributs sont définis automatiquement dans le constructeur
-        // On récupère l'EntityManager
-        $em = $this->getDoctrine()->getManager();
 
-        // Étape 1 : On « persiste » l'entité
-        $em->persist($article);
-
-        // Étape 2 : On « flush » tout ce qui a été persisté avant
-        $em->flush();
-        
         if ($this->get('request')->getMethod() == 'POST') {
             // Ici, on s'occupera de la création et de la gestion du formulaire
 
@@ -85,14 +57,7 @@ class BlogController extends Controller {
         return $this->render('PentalogBlogBundle:Blog:add.html.twig');
     }
 
-    public function editAction() {
-        $article = array(
-            'id' => 1,
-            'title' => 'Mon weekend a Phi Phi Island !',
-            'author' => 'winzou',
-            'content' => 'Ce weekend était trop bien. Blabla…',
-            'date' => new \Datetime()
-        );
+    public function editAction(Article $article) {
 
         // Puis modifiez la ligne du render comme ceci, pour prendre en compte l'article :
         return $this->render('PentalogBlogBundle:Blog:edit.html.twig', array(
@@ -100,19 +65,27 @@ class BlogController extends Controller {
         ));
     }
 
-    public function deleteAction() {
-        return $this->render('PentalogBlogBundle:Blog:delete.html.twig');
+    public function deleteAction(Article $article) {
+        
+        $em = $this->getDoctrine()->getManager();
+        
+        if ($this->get('request')->getMethod() == 'POST') {
+            $em->remove($article);
+
+            $this->get('session')->getFlashBag()->add('notice', 'Article successfully removed');
+            return $this->redirect($this->generateUrl('pentalog_blog_homepage'));
+        }
+        
+        return $this->redirect('PentalogBlogBundle:Blog:delete.html.twig', array('article' => $article));
     }
 
-    public function menuAction($nombre) { // Ici, nouvel argument $nombre, on l'a transmis via le render() depuis la vue
-        // On fixe en dur une liste ici, bien entendu par la suite on la récupérera depuis la BDD !
-        // On pourra récupérer $nombre articles depuis la BDD,
-        // avec $nombre un paramètre qu'on peut changer lorsqu'on appelle cette action
-        $list = array(
-            array('id' => 2, 'title' => 'Mon dernier weekend !'),
-            array('id' => 5, 'title' => 'Sortie de Symfony2.1'),
-            array('id' => 9, 'title' => 'Petit test')
-        );
+    public function menuAction($number) {
+        
+        $list = $this->getDoctrine()->getManager()->getRepository('PentalogBlogBundle:Article')->findBy(
+                array(),
+                array('date' => 'DESC'),
+                $number,
+                0);
 
         return $this->render('PentalogBlogBundle:Blog:menu.html.twig', array(
                     'articles' => $list // C'est ici tout l'intérêt : le contrôleur passe les variables nécessaires au template !

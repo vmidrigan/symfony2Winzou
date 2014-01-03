@@ -13,7 +13,7 @@
   <ul>
     {% for article in articles %}
       <li>
-        <a href="{{ path('pentalog_blog_view', {'id': article.id}) }}">{{ article.title }}</a>
+        <a href="{{ path('pentalog_blog_view', {'slug': article.slug}) }}">{{ article.title }}</a>
         par {{ article.author }},
         le {{ article.date|date('d/m/Y') }}
       </li>
@@ -21,5 +21,16 @@
       <li>Pas (encore !) d'articles</li>
     {% endfor %}
   </ul>
+  
+  <div class="pagination">
+    <ul>
+      {# On utilise la fonction range(a, b) qui crée un tableau de valeurs entre a et b #}
+      {% for p in range(1, pageNumber) %}
+        <li{% if p == page %} class="active"{% endif %}>
+          <a href="{{ path('pentalog_blog_homepage', {'page': p}) }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 
 {% endblock %}

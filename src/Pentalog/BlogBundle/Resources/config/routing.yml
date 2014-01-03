@@ -5,7 +5,7 @@ pentalog_blog_homepage:
         page: \d*
     
 pentalog_blog_view:
-    pattern: /article/{id}
+    pattern: /article/{slug}
     defaults: { _controller: PentalogBlogBundle:Blog:view }
     
 pentalog_blog_view_slug:
@@ -20,13 +20,13 @@ pentalog_blog_add:
     defaults: { _controller: PentalogBlogBundle:Blog:add }
     
 pentalog_blog_edit:
-    pattern: /edit/{id}
+    pattern: /edit/{slug}
     defaults: { _controller: PentalogBlogBundle:Blog:edit }
     requirements:
         id: \d*
         
 pentalog_blog_delete:
-    pattern: /delete/{id}
+    pattern: /delete/{slug}
     defaults: { _controller: PentalogBlogBundle:Blog:delete }
     requirements:
         id: \d*
