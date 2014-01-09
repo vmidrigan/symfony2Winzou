@@ -4,6 +4,9 @@ namespace Pentalog\BlogBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\ExecutionContextInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Article
@@ -11,6 +14,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table(name="article")
  * @ORM\Entity(repositoryClass="Pentalog\BlogBundle\Entity\ArticleRepository")
  * @ORM\HasLifecycleCallbacks()
+ * @Assert\Callback(methods={"validContent"})
+ * @UniqueEntity(fields="title", message="Un article existe déjà avec ce titre.")
  */
 class Article {
 
@@ -27,13 +32,15 @@ class Article {
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="datetime")
+     * @Assert\DateTime()
      */
     private $date;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="string", length=255)
+     * @ORM\Column(name="title", type="string", length=255, unique=true)
+     * dht@Assert\MinLength(10)
      */
     private $title;
 
@@ -41,6 +48,7 @@ class Article {
      * @var string
      *
      * @ORM\Column(name="author", type="string", length=255)
+     * sgr@Assert\MinLength(2)
      */
     private $author;
 
@@ -48,6 +56,7 @@ class Article {
      * @var string
      *
      * @ORM\Column(name="content", type="text")
+     * @Assert\NotBlank()
      */
     private $content;
 
@@ -58,7 +67,7 @@ class Article {
      * @ORM\Column(name="publication", type="boolean") 
      */
     private $publication;
-    
+
     /**
      *
      * @var string
@@ -68,7 +77,8 @@ class Article {
     private $update_date;
 
     /**
-     * @ORM\OneToOne(targetEntity="Pentalog\BlogBundle\Entity\Image", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Pentalog\BlogBundle\Entity\Image", cascade={"persist", "remove"})
+     * @Assert\Valid()
      */
     private $image;
 
@@ -76,12 +86,12 @@ class Article {
      * @ORM\ManyToMany(targetEntity="Pentalog\BlogBundle\Entity\Category", cascade={"persist"})
      */
     private $categories;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="Pentalog\BlogBundle\Entity\Comment", mappedBy="article")
      */
     private $comments; // Ici commentaires prend un « s », car un article a plusieurs commentaires !
-    
+
     /**
      * @Gedmo\Slug(fields={"title"})
      * @ORM\Column(length=128, unique=true)
@@ -230,15 +240,13 @@ class Article {
         return $this->image;
     }
 
-
     /**
      * Add categories
      *
      * @param \Pentalog\BlogBundle\Entity\Category $category
      * @return Article
      */
-    public function addCategory(\Pentalog\BlogBundle\Entity\Category $category)
-    {
+    public function addCategory(\Pentalog\BlogBundle\Entity\Category $category) {
         $this->categories[] = $category;
 
         return $this;
@@ -249,8 +257,7 @@ class Article {
      *
      * @param \Pentalog\BlogBundle\Entity\Category $categories
      */
-    public function removeCategory(\Pentalog\BlogBundle\Entity\Category $category)
-    {
+    public function removeCategory(\Pentalog\BlogBundle\Entity\Category $category) {
         $this->categories->removeElement($category);
     }
 
@@ -259,8 +266,7 @@ class Article {
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getCategories()
-    {
+    public function getCategories() {
         return $this->categories;
     }
 
@@ -270,8 +276,7 @@ class Article {
      * @param \Pentalog\BlogBundle\Entity\Comment $comment
      * @return Article
      */
-    public function addComment(\Pentalog\BlogBundle\Entity\Comment $comment)
-    {
+    public function addComment(\Pentalog\BlogBundle\Entity\Comment $comment) {
         $this->comments[] = $comment;
         $comment->setArticle($this);
 
@@ -283,8 +288,7 @@ class Article {
      *
      * @param \Pentalog\BlogBundle\Entity\Comment $comment
      */
-    public function removeComment(\Pentalog\BlogBundle\Entity\Comment $comment)
-    {
+    public function removeComment(\Pentalog\BlogBundle\Entity\Comment $comment) {
         $this->comments->removeElement($comment);
     }
 
@@ -293,8 +297,7 @@ class Article {
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getComments()
-    {
+    public function getComments() {
         return $this->comments;
     }
 
@@ -304,8 +307,7 @@ class Article {
      * @param \DateTime $updateDate
      * @return Article
      */
-    public function setUpdateDate($updateDate)
-    {
+    public function setUpdateDate($updateDate) {
         $this->update_date = $updateDate;
 
         return $this;
@@ -316,11 +318,10 @@ class Article {
      *
      * @return \DateTime 
      */
-    public function getUpdateDate()
-    {
+    public function getUpdateDate() {
         return $this->update_date;
     }
-    
+
     /**
      * @ORM\PreUpdate
      * @ORM\PrePersist
@@ -335,8 +336,7 @@ class Article {
      * @param string $slug
      * @return Article
      */
-    public function setSlug($slug)
-    {
+    public function setSlug($slug) {
         $this->slug = $slug;
 
         return $this;
@@ -347,8 +347,20 @@ class Article {
      *
      * @return string 
      */
-    public function getSlug()
-    {
+    public function getSlug() {
         return $this->slug;
     }
+
+    public function validContent(ExecutionContextInterface $context) {
+        $mots_interdits = array('échec', 'abandon');
+
+        // On vérifie que le contenu ne contient pas l'un des mots
+        if (preg_match('#' . implode('|', $mots_interdits) . '#', $this->getContent())) {
+            // La règle est violée, on définit l'erreur et son message
+            // 1er argument : on dit quel attribut l'erreur concerne, ici « contenu »
+            // 2e argument : le message d'erreur
+            $context->addViolationAt('content', 'Contenu invalide car il contient un mot interdit.', array(), null);
+        }
+    }
+
 }

@@ -8,37 +8,7 @@
 
 {% block pentalogblog_body %}
 
-  <h2>
-    {# On vérifie qu'une image soit bien associée à l'article #}
-    {% if article.image is not null %}
-        <img src="{{ article.image.url }}" alt="{{ article.image.alt }}" />
-    {% endif %}
-    {{ article.title }}
-  </h2>
-  <i>Par {{ article.author }}, le {{ article.date|date('d/m/Y') }}</i>
-
-  {% if article.categories.count > 0 %}
-    - Catégories :
-    {% for categorie in article.categories %}
-      {{ categorie.name }}
-      {% if not loop.last %} - {% endif %}
-    {% endfor %}
-  {% endif %}
-      
-  <div class="well">
-    {{ article.content }}
-  </div>
-      
-  {% if competences|length > 0 %}
-    <div>
-      Compétences utilisées dans cet article :
-      <ul>
-        {% for competence in competences %}
-          <li>{{ competence.competence.name }} : {{ competence.level }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
+  {% include 'PentalogBlogBundle:Blog:article.html.twig' %}
 
   <p>
     <a href="{{ path('pentalog_blog_homepage') }}" class="btn btn-default">

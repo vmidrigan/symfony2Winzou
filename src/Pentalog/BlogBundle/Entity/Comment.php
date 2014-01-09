@@ -3,6 +3,7 @@
 namespace Pentalog\BlogBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Pentalog\BlogBundle\Validator\AntiFlood;
 
 /**
  * Comment
@@ -32,6 +33,7 @@ class Comment {
      * @var string
      *
      * @ORM\Column(name="content", type="text")
+     * @AntiFlood()
      */
     private $content;
 

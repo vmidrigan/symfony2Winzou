@@ -1,4 +1,13 @@
 pentalog_blog:
     resource: "@PentalogBlogBundle/Resources/config/routing.yml"
     prefix:   /blog
+login:
+    pattern:   /login
+    defaults:  { _controller: PentalogUserBundle:Security:login }
+
+login_check:
+    pattern:   /login_check
+
+logout:
+    pattern:   /logout
 

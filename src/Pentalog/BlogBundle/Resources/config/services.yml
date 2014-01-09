@@ -8,3 +8,9 @@ services:
     pentalog_blog.antispam:
         class: Pentalog\BlogBundle\Antispam\PentalogAntispam
         arguments: [@mailer, %locale%, 3]
+    pentalog_blog.validator.antiflood:
+        class: Pentalog\BlogBundle\Validator\AntiFloodValidator
+        arguments: [@request, @doctrine.orm.entity_manager]
+        scope: request
+        tags:
+            - { name: validator.constraint_validator, alias: pentalog_blog_antiflood }

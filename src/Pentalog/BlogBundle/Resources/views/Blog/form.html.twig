@@ -1,11 +1,37 @@
 {# src/Pentalog/BlogBundle/Resources/views/Blog/form.html.twig #}
 
-{# Cette vue n'hérite de personne, elle sera incluse par d'autres vues qui, elles, hériteront probablement du layout #}
-{# Je dis « probablement » car, ici pour cette vue, on n'en sait rien et c'est une info qui ne nous concerne pas #}
+{% set action = action|default(path('pentalog_blog_add')) %}
 
-<h3>Formulaire d'article</h3>
-
-{# Ici on laisse vide la vue pour l'instant, on la comblera plus tard lorsqu'on saura afficher un formulaire #}
 <div class="well">
-  Ici se trouvera le formulaire.
+    <form action="{{ action }}" method="post" {{ form_enctype(form) }}>
+
+{# Les erreurs générales du formulaire. #}
+{{ form_errors(form) }}
+
+        <div>
+  {# Génération du label. #}
+  {{ form_label(form.title, "Titre de l'article") }}
+
+  {# Affichage des erreurs pour ce champ précis. #}
+  {{ form_errors(form.title) }}
+
+  {# Génération de l'input. #}
+  {{ form_widget(form.title) }}
+        </div>
+
+{# Idem pour un autre champ. #}
+        <div>
+  {{ form_label(form.content, "Contenu de l'article") }}
+  {{ form_errors(form.content) }}
+  {{ form_widget(form.content) }}
+        </div>
+
+{# Génération des champs pas encore écrits.
+   Dans cet exemple, ce serait « date », « auteur » et « publication »,
+   mais aussi le champ CSRF (géré automatiquement par Symfony !)
+   et tous les champs cachés (type « hidden »). #}
+{{ form_rest(form) }}
+
+        <input type="submit" class="btn btn-default btn-primary"/>
+    </form>
 </div>

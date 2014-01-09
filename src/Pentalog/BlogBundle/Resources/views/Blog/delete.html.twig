@@ -1,0 +1,24 @@
+{# src/Pentalog/BlogBundle/Resources/views/Blog/delete.html.twig #}
+
+{% extends "PentalogBlogBundle::layout.html.twig" %}
+
+{% block title %}
+Supprimer un article - {{ parent() }}
+{% endblock %}
+
+{% block pentalogblog_body %}
+<h2>Supprimer un article - {{ article.title }}</h2>
+<p>
+    Etes-vous certain de vouloir supprimer l'article "{{ article.title }}" ?
+</p>
+
+<form action="{{ path('pentalog_blog_delete', {'slug': article.slug}) }}" method="post" {{ form_enctype(form) }}>
+    <a href="{{ path('pentalog_blog_view', {'slug': article.slug}) }}" class="btn btn-default">
+        <i class="icon-chevron-left"></i>
+        Retour à l'article
+    </a>
+    <input type="submit" value="Supprimer" class="btn btn-default btn-danger"/>
+{{ form_rest(form) }}    
+</form>
+
+{% endblock %}

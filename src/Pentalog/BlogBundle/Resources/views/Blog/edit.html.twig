@@ -3,14 +3,14 @@
 {% extends "PentalogBlogBundle::layout.html.twig" %}
 
 {% block title %}
-  Modifier un article - {{ parent() }}
+  Modifier l'article {{ article.title }} - {{ parent() }}
 {% endblock %}
 
 {% block pentalogblog_body %}
 
-  <h2>Modifier un article</h2>
+  <h2>Modifier l'article {{ article.title }}</h2>
 
-  {% include "PentalogBlogBundle:Blog:form.html.twig" %}
+  {% include "PentalogBlogBundle:Blog:form.html.twig" with {'action': path('pentalog_blog_edit', {'slug': article.slug})} %}
 
   <p>
     Vous éditez un article déjà existant,

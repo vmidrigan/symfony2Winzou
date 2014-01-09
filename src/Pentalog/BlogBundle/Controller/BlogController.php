@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Pentalog\BlogBundle\Entity\Article;
 use Pentalog\BlogBundle\Entity\Image;
+use Pentalog\BlogBundle\Form\ArticleType;
+use Pentalog\BlogBundle\Form\ArticleEditType;
 
 class BlogController extends Controller {
 
@@ -16,13 +18,13 @@ class BlogController extends Controller {
             throw $this->createNotFoundException('Page inexistante (page = ' . $page . ')');
         }
 
-        $articles = $this->getDoctrine()->getManager()->getRepository('PentalogBlogBundle:Article')->getArticles(1, $page);
+        $articles = $this->getDoctrine()->getManager()->getRepository('PentalogBlogBundle:Article')->getArticles(3, $page);
 
         return $this->render('PentalogBlogBundle:Blog:index.html.twig', array(
-            'articles' => $articles,
-            'page'       => $page,
-            'pageNumber' => ceil(count($articles)/1)
-            ));
+                    'articles' => $articles,
+                    'page' => $page,
+                    'pageNumber' => ceil(count($articles) / 1)
+        ));
     }
 
     public function viewAction(Article $article) {
@@ -46,46 +48,83 @@ class BlogController extends Controller {
 
     public function addAction() {
 
-        if ($this->get('request')->getMethod() == 'POST') {
-            // Ici, on s'occupera de la création et de la gestion du formulaire
+        $article = new Article();
+        $form = $this->createForm(new ArticleType, $article);
 
-            $this->get('session')->getFlashBag()->add('notice', 'Article bien enregistré');
+        // On récupère la requête
+        $request = $this->get('request');
 
-            // Puis on redirige vers la page de visualisation de cet article
-            return $this->redirect($this->generateUrl('pentalog_blog_view', array('id' => $article->getId())));
+        if ($request->getMethod() == 'POST') {
+            $form->bind($request);
+
+            if ($form->isValid()) {
+                // On l'enregistre notre objet $article dans la base de données
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($article);
+                $em->flush();
+
+                $this->get('session')->getFlashBag()->add('notice', 'Article bien enregistré');
+
+                // On redirige vers la page de visualisation de l'article nouvellement créé
+                return $this->redirect($this->generateUrl('pentalog_blog_view', array('slug' => $article->getSlug())));
+            }
         }
-        return $this->render('PentalogBlogBundle:Blog:add.html.twig');
+        return $this->render('PentalogBlogBundle:Blog:add.html.twig', array(
+                    'form' => $form->createView()
+        ));
     }
 
     public function editAction(Article $article) {
 
+        $form = $this->createForm(new ArticleEditType(), $article);
+
+        $request = $this->get('request');
+
+        if ($request->getMethod() == 'POST') {
+            $form->bind($request);
+
+            if ($form->isValid()) {
+                // On l'enregistre notre objet $article dans la base de données
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($article);
+                $em->flush();
+
+                $this->get('session')->getFlashBag()->add('notice', 'Article bien enregistré');
+
+                // On redirige vers la page de visualisation de l'article nouvellement créé
+                return $this->redirect($this->generateUrl('pentalog_blog_view', array('slug' => $article->getSlug())));
+            }
+        }
+
         // Puis modifiez la ligne du render comme ceci, pour prendre en compte l'article :
         return $this->render('PentalogBlogBundle:Blog:edit.html.twig', array(
-                    'article' => $article
+                    'article' => $article,
+                    'form' => $form->createView()
         ));
     }
 
     public function deleteAction(Article $article) {
-        
-        $em = $this->getDoctrine()->getManager();
-        
-        if ($this->get('request')->getMethod() == 'POST') {
-            $em->remove($article);
+        $form = $this->createFormBuilder()->getForm();
+        $request = $this->get('request');
+        if ($request->getMethod() == 'POST') {
+            $form->bind($request);
 
-            $this->get('session')->getFlashBag()->add('notice', 'Article successfully removed');
-            return $this->redirect($this->generateUrl('pentalog_blog_homepage'));
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $em->remove($article);
+                $em->flush();
+
+                $this->get('session')->getFlashBag()->add('notice', 'Article successfully removed');
+                return $this->redirect($this->generateUrl('pentalog_blog_homepage'));
+            }
         }
-        
-        return $this->redirect('PentalogBlogBundle:Blog:delete.html.twig', array('article' => $article));
+        return $this->render('PentalogBlogBundle:Blog:delete.html.twig', array('form' => $form->createView(), 'article' => $article));
     }
 
     public function menuAction($number) {
-        
+
         $list = $this->getDoctrine()->getManager()->getRepository('PentalogBlogBundle:Article')->findBy(
-                array(),
-                array('date' => 'DESC'),
-                $number,
-                0);
+                array(), array('date' => 'DESC'), $number, 0);
 
         return $this->render('PentalogBlogBundle:Blog:menu.html.twig', array(
                     'articles' => $list // C'est ici tout l'intérêt : le contrôleur passe les variables nécessaires au template !

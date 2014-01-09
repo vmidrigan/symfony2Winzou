@@ -1,0 +1,7 @@
+parameters:
+#    pentalog_user.example.class: Pentalog\UserBundle\Example
+
+services:
+#    pentalog_user.example:
+#        class: %pentalog_user.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
