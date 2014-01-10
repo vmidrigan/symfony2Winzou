@@ -27,7 +27,12 @@
           <h3>Le blog</h3>
           <ul class="nav nav-pills nav-stacked">
             <li><a href="{{ path('pentalog_blog_homepage') }}">Accueil du blog</a></li>
-            <li><a href="{{ path('pentalog_blog_add') }}">Ajouter un article</a></li>
+            {% if is_granted('ROLE_AUTHOR') %}
+                <li><a href="{{ path('pentalog_blog_add') }}">Ajouter un article</a></li>
+            {% endif %}
+            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                <li><a href="{{ path('logout') }}">Deconnexion</a></li>
+            {% endif %}
           </ul>
                     
           {{ render(controller("PentalogBlogBundle:Blog:menu", {'number': 3})) }}

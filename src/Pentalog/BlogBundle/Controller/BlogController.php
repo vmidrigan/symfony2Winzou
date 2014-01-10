@@ -8,6 +8,7 @@ use Pentalog\BlogBundle\Entity\Article;
 use Pentalog\BlogBundle\Entity\Image;
 use Pentalog\BlogBundle\Form\ArticleType;
 use Pentalog\BlogBundle\Form\ArticleEditType;
+use JMS\SecurityExtraBundle\Annotation\Secure;
 
 class BlogController extends Controller {
 
@@ -46,6 +47,10 @@ class BlogController extends Controller {
         return new Response("On pourrait afficher l'article correspondant au slug '" . $slug . "', créé en " . $year . " et au format " . $format . ".");
     }
 
+    /**
+     * @Secure(roles="ROLE_AUTHOR")
+     * @return type
+     */
     public function addAction() {
 
         $article = new Article();
