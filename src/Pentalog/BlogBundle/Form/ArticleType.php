@@ -21,7 +21,7 @@ class ArticleType extends AbstractType {
                 ->add('date', 'date')
                 ->add('title', 'text')
                 ->add('author', 'text')
-                ->add('content', 'textarea')
+                ->add('content', 'ckeditor')
                 ->add('publication', 'checkbox')
                 ->add('image', new ImageType())
                 ->add('categories', 'entity', array(
