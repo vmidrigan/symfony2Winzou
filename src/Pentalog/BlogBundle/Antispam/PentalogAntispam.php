@@ -10,7 +10,6 @@ class PentalogAntispam extends \Twig_Extension {
 
     public function __construct(\Swift_Mailer $mailer, $nbForSpam) {
         $this->mailer = $mailer;
-        $this->locale = $locale;
         $this->nbForSpam = (int) $nbForSpam;
     }
 

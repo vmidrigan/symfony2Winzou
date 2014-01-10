@@ -8,7 +8,6 @@ services:
     pentalog_blog.antispam:
         class: Pentalog\BlogBundle\Antispam\PentalogAntispam
         arguments: [@mailer, 3]
-        scope: request
         tags:
             -  { name: twig.extension }
         calls:
@@ -23,3 +22,14 @@ services:
         class: Pentalog\BlogBundle\Form\Type\Ckeditor
         tags:
             - { name: form.type, alias: ckeditor }
+#    pentalog_blog.beta_listener:
+#        class: Pentalog\BlogBundle\Beta\BetaListener
+#        arguments: ["2014-08-19"]
+#        tags:
+#            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+#            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+    pentalog_blog.bigbrother:
+        class: Pentalog\BlogBundle\Bigbrother\CensureListener
+        arguments: [[1, 2, 3], @mailer]
+        tags:
+            - { name: kernel.event_listener, event: pentalog_blog.bigbrother.post_message, method: onMessagePost }

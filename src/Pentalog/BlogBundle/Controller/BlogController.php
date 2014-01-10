@@ -9,6 +9,8 @@ use Pentalog\BlogBundle\Entity\Image;
 use Pentalog\BlogBundle\Form\ArticleType;
 use Pentalog\BlogBundle\Form\ArticleEditType;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use Sdz\BlogBundle\Bigbrother\BigbrotherEvents;
+use Sdz\BlogBundle\Bigbrother\MessagePostEvent;
 
 class BlogController extends Controller {
 
@@ -63,6 +65,17 @@ class BlogController extends Controller {
             $form->bind($request);
 
             if ($form->isValid()) {
+
+                // On crée l'évènement avec ses 2 arguments
+//                $event = new MessagePostEvent($article->getContent(), $article->getUser());
+//
+//                // On déclenche l'évènement
+//                $this->get('event_dispatcher')
+//                        ->dispatch(BigbrotherEvents::onMessagePost, $event);
+//
+//                // On récupère ce qui a été modifié par le ou les listeners, ici le message
+//                $article->setContent($event->getMessage());
+
                 // On l'enregistre notre objet $article dans la base de données
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($article);
