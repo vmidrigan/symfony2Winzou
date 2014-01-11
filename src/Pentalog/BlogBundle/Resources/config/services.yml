@@ -32,4 +32,4 @@ services:
         class: Pentalog\BlogBundle\Bigbrother\CensureListener
         arguments: [[1, 2, 3], @mailer]
         tags:
-            - { name: kernel.event_listener, event: pentalog_blog.bigbrother.post_message, method: onMessagePost }
+            - { name: kernel.event_listener, event: pentalog_blog.bigbrother.post_message, method: onMessagePost, priority: 2 }
