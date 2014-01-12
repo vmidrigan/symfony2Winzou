@@ -27,7 +27,7 @@ class BlogController extends Controller {
                     'articles' => $articles,
                     'page' => $page,
                     'pageNumber' => ceil(count($articles) / 1)
-        ));
+                ));
     }
 
     public function viewAction(Article $article) {
@@ -41,7 +41,7 @@ class BlogController extends Controller {
         return $this->render('PentalogBlogBundle:Blog:view.html.twig', array(
                     'article' => $article,
                     'competences' => $compList
-        ));
+                ));
     }
 
     public function viewSlugAction($slug, $year, $format) {
@@ -75,7 +75,6 @@ class BlogController extends Controller {
 //
 //                // On récupère ce qui a été modifié par le ou les listeners, ici le message
 //                $article->setContent($event->getMessage());
-
                 // On l'enregistre notre objet $article dans la base de données
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($article);
@@ -89,7 +88,7 @@ class BlogController extends Controller {
         }
         return $this->render('PentalogBlogBundle:Blog:add.html.twig', array(
                     'form' => $form->createView()
-        ));
+                ));
     }
 
     public function editAction(Article $article) {
@@ -118,7 +117,7 @@ class BlogController extends Controller {
         return $this->render('PentalogBlogBundle:Blog:edit.html.twig', array(
                     'article' => $article,
                     'form' => $form->createView()
-        ));
+                ));
     }
 
     public function deleteAction(Article $article) {
@@ -146,7 +145,13 @@ class BlogController extends Controller {
 
         return $this->render('PentalogBlogBundle:Blog:menu.html.twig', array(
                     'articles' => $list // C'est ici tout l'intérêt : le contrôleur passe les variables nécessaires au template !
-        ));
+                ));
+    }
+
+    public function translateAction($name) {
+        return $this->render('PentalogBlogBundle:Blog:translate.html.twig', array(
+                    'name' => $name
+                ));
     }
 
 }

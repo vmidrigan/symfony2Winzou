@@ -4,7 +4,7 @@ imports:
 
 framework:
     #esi:             ~
-    translator:      { fallback: "%locale%" }
+    translator:      { fallback: %locale% }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -15,7 +15,7 @@ framework:
     templating:
         engines: ['twig']
         #assets_version: SomeVersionScheme
-    default_locale:  "%locale%"
+    default_locale:  %locale%
     trusted_hosts:   ~
     trusted_proxies: ~
     session:
@@ -78,3 +78,9 @@ fos_user:
     db_driver:     orm                        # Le type de BDD à utiliser, nous utilisons l'ORM Doctrine depuis le début
     firewall_name: main                       # Le nom du firewall derrière lequel on utilisera ces utilisateurs
     user_class:    Pentalog\UserBundle\Entity\User # La classe de l'entité User que nous utilisons
+
+services:
+    twig.extension.intl:
+       class: Twig_Extensions_Extension_Intl
+       tags:
+           - { name: twig.extension }

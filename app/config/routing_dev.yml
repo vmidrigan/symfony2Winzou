@@ -12,4 +12,8 @@ _configurator:
 
 _main:
     resource: routing.yml
+    
+PentalogBlogBundle_translate:
+    pattern:  /{_locale}/translate/{name}
+    defaults: { _controller: PentalogBlogBundle:Blog:translate }
 
