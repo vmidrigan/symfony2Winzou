@@ -16,4 +16,6 @@ _main:
 PentalogBlogBundle_translate:
     pattern:  /{_locale}/translate/{name}
     defaults: { _controller: PentalogBlogBundle:Blog:translate }
+console:
+    resource: "@CoreSphereConsoleBundle/Resources/config/routing.yml"
 
