@@ -33,3 +33,8 @@ services:
         arguments: [[1, 2, 3], @mailer]
         tags:
             - { name: kernel.event_listener, event: pentalog_blog.bigbrother.post_message, method: onMessagePost, priority: 2 }
+#    pentalog_blog.paramconverter_test:
+#        class: Pentalog\BlogBundle\ParamConverter\TestParamConverter
+#        arguments: ['Pentalog\BlogBundle\Entity\Site', @doctrine.orm.entity_manager]
+#        tags:
+#          - { name: request.param_converter, priority: 20 }
